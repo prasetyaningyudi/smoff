@@ -1,0 +1,51 @@
+/* Title */
+.navbar-default .navbar-brand {
+    color: #023778;
+}
+.my-breadcurm{
+	background: #0275D8;	
+	border-bottom: solid 1px #9365B4;
+	color:#EEEEEE;
+}
+.my-breadcurm a{
+	color:#EFEFEF;
+}
+.my-breadcurm a:hover{
+	color:#FFFFFF;
+}
+.my-profile{
+	border-bottom: solid 1px 0C2183;
+	color:#EEEEEE;
+}
+.my-menu{
+	border-top: solid 1px #9365B4;
+}
+#container #sidebar{
+	background: #5C4283;
+	color: #FFFFFF;
+}
+#sidebar a{
+	color: #EEDDDD;
+	text-decoration:none;
+}
+#sidebar ul ul{
+	padding: 0px 0px 0px 15px;
+	margin: 0px;
+
+}
+#sidebar ul li li a:hover{
+	background: rgba(0,0,0,0.1);
+}
+.panel-brown > .panel-heading {
+  background-image: -webkit-linear-gradient(top, #025BA6 0%, #027BB2 100%);
+  background-image:      -o-linear-gradient(top, #025BA6 0%, #027BB2 100%);
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#025BA6), to(#027BB2));
+  background-image:         linear-gradient(to bottom, #025BA6 0%, #027BB2 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff337ab7', endColorstr='#ff2e6da4', GradientType=0);
+  background-repeat: repeat-x;
+  color: #EEEEEE;
+}
+
+.panel-brown{
+	border:solid 1px #025BA6;
+}

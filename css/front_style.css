@@ -1,0 +1,61 @@
+body, html {
+    height: 100%;
+}
+
+.my-content{
+	background-color: #FFFFFFF;
+	width: 100%;
+	height: 100%;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;	
+}
+
+.w3-display-20{position:absolute;top:20%;left:50%;transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%)}
+.w3-logo{font-size:90px!important;font-weight:bold;text-shadow:0px 1px 2px #000000}
+.w3-height-padding,.w3-height-padding>.w3-half,.w3-height-padding>.w3-third,.w3-height-padding>.w3-twothird,.w3-height-padding>.w3-threequarter,.w3-height-padding>.w3-quarter,.w3-height-padding>.w3-col{padding:2px 8px}
+.justify{text-align:justify; text-justify: inter-word;}
+li.myautocomplete:hover div{background:none;border:solid 1px rgba(0,0,0,0);color:black}
+
+
+/****** Style Star Rating Widget *****/
+.my-rating{
+	max-width: 330px;
+	margin:0 auto;
+	
+}
+.rating { 
+  border: none;
+  float: left;
+}
+.rating > input { display: none;  } 
+.rating > label:before { 
+  margin: 5px;
+  font-size: 1.25em;
+  font-family: FontAwesome;
+  display: inline-block;
+  content: "\f005";
+}
+
+.rating > .half:before { 
+  content: "\f089";
+  position: absolute;
+}
+
+.rating > label { 
+  color: #ddd; 
+ float: right; 
+}
+
+/***** CSS Magic to Highlight Stars on Hover *****/
+
+.rating > input:checked ~ label, /* show gold star when clicked */
+.rating:not(:checked) > label:hover, /* hover current star */
+.rating:not(:checked) > label:hover ~ label { color: #FFD700;  } /* hover previous stars in list */
+
+.rating > input:checked + label:hover, /* hover current star when changing rating */
+.rating > input:checked ~ label:hover,
+.rating > label:hover ~ input:checked ~ label, /* lighten current selection */
+.rating > input:checked ~ label:hover ~ label { color: #FFED85;  } 
+.w3-tiny-red,.w3-hover-tiny-red:hover{color:#fff!important;background-color:#FF824C!important}
+.w3-white-red,.w3-hover-white-red:hover{color:#000!important;background-color:#d89a7f!important}
