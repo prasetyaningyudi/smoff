@@ -51,7 +51,7 @@
 							</div>
 							<div class="row">
 								<div class="col-sm-6">
-									<a class="btn btn-info btn-lg btn-square" href="<?php echo base_url().'guest/signup'; ?>" role="button">Sign Up</a>	
+									<a class="btn btn-info btn-lg btn-square" href="<?php echo base_url().'signup'; ?>" role="button">Sign Up</a>	
 								</div>
 								<div class="col-sm-6">
 									<a class="btn btn-info btn-lg btn-square" href="<?php echo base_url().'authentication/login'; ?>" role="button">Log In</a>	

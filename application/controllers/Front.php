@@ -251,7 +251,8 @@ class Front extends CI_Controller {
 										'USER_ID' => $_POST['id'],
 									);								
 								$this->db->insert('GUEST_BOOK', $this->data['saveddata']);
-								redirect(base_url().'front/welcome/'.$this->data['front_page']);
+								//redirect(base_url().'front/welcome/'.$this->data['front_page']);
+								redirect('front/thanks/2/'.$this->data['front_page']);
 							}else{
 								$this->data['name'] = $_POST['name'];		
 								$this->data['company'] = $_POST['company'];		
@@ -270,7 +271,8 @@ class Front extends CI_Controller {
 										'USER_ID' => $_POST['id'],
 									);								
 								$this->db->insert('GUEST_BOOK', $this->data['saveddata']);
-								redirect(base_url().'front/welcome/'.$this->data['front_page']);								
+								//redirect(base_url().'front/welcome/'.$this->data['front_page']);
+								redirect('front/thanks/2/'.$this->data['front_page']);
 							}	else {
 								$this->data['name'] = $_POST['name'];		
 								$this->data['company'] = $_POST['company'];		
@@ -288,7 +290,8 @@ class Front extends CI_Controller {
 										'OTHER_NEEDS' => $_POST['oneed'],
 									);								
 								$this->db->insert('GUEST_BOOK', $this->data['saveddata']);
-								redirect(base_url().'front/welcome/'.$this->data['front_page']);							
+								//redirect(base_url().'front/welcome/'.$this->data['front_page']);
+								redirect('front/thanks/2/'.$this->data['front_page']);
 						}						
 					}
 					
@@ -404,7 +407,7 @@ class Front extends CI_Controller {
 								'USER_ID' => $_POST['id'],
 							);								
 						$this->db->insert('PACKAGES', $this->data['saveddata']);
-						redirect(base_url().'front/welcome/'.$this->data['front_page']);							
+						redirect('front/thanks/2/'.$this->data['front_page']);							
 					}else{
 						$this->data['company'] = $_POST['company'];
 						$this->data['warning'] = array(
@@ -538,7 +541,7 @@ class Front extends CI_Controller {
 					$this->db->set('RATING', $_POST['rating']);
 					$this->db->where('ID', $gid);
 					$this->db->update('GUEST_BOOK');	
-					redirect(base_url().'front/start/'.$this->data['front_page']);
+					redirect('front/thanks/1/'.$this->data['front_page']);
 				}else{
 					$this->db->select('GUEST_BOOK.ID');
 					$this->db->select('REF_NAME');
@@ -566,6 +569,26 @@ class Front extends CI_Controller {
 					$this->load->view('front_sign_out_conf');
 					$this->load->view('front_footer');					
 				}		
+			}
+		}
+	}
+	
+	public function thanks($redirect= null, $front_id=null){
+		if($front_id == null){
+			redirect('authentication/front_no_permission');
+		}else{
+			$this->data['subtitle'] = 'Sign Out';			
+			$this->data['role_access'] = array('1','2','3','4','5');	
+			$this->load->view('front_header', $this->data);
+			$this->load->view('front_thanks');
+			$this->load->view('front_footer');
+			
+			if($redirect == '1'){
+				header( "refresh:2;url=".base_url().'front/start/'.$this->data['front_page'] );
+			}else if($redirect == '2'){
+				header( "refresh:2;url=".base_url().'front/welcome/'.$this->data['front_page'] );
+			}else{
+				
 			}
 		}
 	}
