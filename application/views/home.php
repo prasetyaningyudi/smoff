@@ -34,18 +34,30 @@
 						<?php endif; ?>										
 				  <?php else: ?>
 				  <!--<div class="collapse navbar-collapse">-->
-				  <div>
-					<h2>Hello, Guest</h2>
-					<h4>How are you today? Feels good right.<br>This Web App is about Visitor Management. If you want to try our services. Just click the button below to start.</h4>
-					</div>
-					<div class="row">
-						<div class="col-sm-6">
-							<a class="btn btn-info btn-lg btn-square" href="<?php echo base_url().'guest/signup'; ?>" role="button">Sign Up</a>	
-						</div>
-						<div class="col-sm-6">
-							<a class="btn btn-info btn-lg btn-square" href="<?php echo base_url().'authentication/login'; ?>" role="button">Log In</a>	
-						</div>					
-					</div>					
+						<?php if($message == 'signup_success'): ?>
+							<div>
+							<h2>Your Registration Success</h2>
+							<h4>Please login to manage your account.</h4>
+							</div>
+							<div class="row">
+								<div class="col-sm-12">
+									<a class="btn btn-info btn-lg btn-square" href="<?php echo base_url().'authentication/login'; ?>" role="button">Log In</a>	
+								</div>					
+							</div>						
+						<?php else: ?>
+							<div>
+							<h2>Hello, Guest</h2>
+							<h4>How are you today? Feels good right.<br>This Web App is about Visitor Management. If you want to try our services. Just click the button below to start.</h4>
+							</div>
+							<div class="row">
+								<div class="col-sm-6">
+									<a class="btn btn-info btn-lg btn-square" href="<?php echo base_url().'guest/signup'; ?>" role="button">Sign Up</a>	
+								</div>
+								<div class="col-sm-6">
+									<a class="btn btn-info btn-lg btn-square" href="<?php echo base_url().'authentication/login'; ?>" role="button">Log In</a>	
+								</div>					
+							</div>
+						<?php endif; ?>					
 				  <?php endif; ?>
 			  </div>			  
 			</div> 

@@ -51,7 +51,12 @@ class Home extends CI_Controller {
 		redirect('home/welcome');
 	}	
 	
-	public function welcome(){	
+	public function welcome($message=null){
+		if($message == 'signup_success'){
+			$this->data['message'] = 'signup_success';
+		}else{
+			$this->data['message'] =  null;
+		}
 		$this->data['subtitle'] = 'Welcome';			
 		$this->data['data_table'] = 'no';
 		$this->data['role_access'] = array('1','2','3','4','5');	
