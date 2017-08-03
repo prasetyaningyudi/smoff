@@ -39,7 +39,7 @@ class User extends CI_Controller {
 		$this->db->from($tables);
 		$this->db->WHERE('USER.ROLE_ID = ROLE.ID');
 		$this->db->order_by('ROLE.ID', 'ASC');		
-		$this->db->order_by('USER.USER_ALIAS', 'ASC');		
+		$this->db->order_by('USER.ID', 'ASC');		
 		$query = $this->db->get(); 
 		$this->data['record'] = $query->result();
 		

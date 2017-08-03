@@ -3,7 +3,7 @@
 				<table id="my_table" class="table table-striped">
 					<thead>
 					<tr>
-						<th class="text-center">No</th>
+						<th class="text-center">Id</th>
 						<th>Username</th>
 						<th>Alias</th>
 						<th>Role</th>
@@ -15,7 +15,8 @@
 					<tbody>
 					<?php $i=1; foreach ($record as $item):?>
 					<tr>		
-						<td class="text-center"><?php echo $i++; ?></td>
+						
+						<td  class="text-center"><?php echo $item->ID;?></td>
 						<td><?php echo $item->USERNAME;?></td>
 						<td><?php echo $item->USER_ALIAS;?></td>
 						<td><?php echo $item->ROLE_NAME;?></td>
