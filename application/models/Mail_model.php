@@ -6,10 +6,12 @@ class Mail_model extends CI_Model {
 	public function __construct(){
 		// Call the CI_Model constructor
 		parent::__construct();
-		require_once FCPATH.'vendor\phpmailer\phpmailer\PHPMailerAutoload.php';
+		require_once FCPATH.'vendor/phpmailer/phpmailer/PHPMailerAutoload.php';
 	}	
 	
 	public function sent_from_gmail($ToEmail, $subject, $MessageHTML, $MessageTEXT){
+		$MessageHTML .= '<br><br><br>OVIS : Smart System for Smart Office.';
+		$MessageTEXT .= '<br><br><br>OVIS : Smart System for Smart Office.';
 		//Create a new PHPmailer instance
 		$mail = new PHPmailer;
 
@@ -27,7 +29,7 @@ class Mail_model extends CI_Model {
 		$mail->Subject     = $subject;
 		$mail->ContentType = 'text/html; charset=utf-8\r\n';
 		$mail->From        = 'prasetyaningyudi@gmail.com';
-		$mail->FromName    = 'Guest Book';
+		$mail->FromName    = 'OVIS';
 		$mail->WordWrap    = 900; // RFC 2822 Compliant for Max 998 characters per line
 
 		$mail->AddAddress( $ToEmail ); // To:

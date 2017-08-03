@@ -24,7 +24,8 @@ class Front extends CI_Controller {
 		}else{
 			$this->data['init_data'] = null;
 		}
-						
+		$this->load->model('mail_model');	
+		ini_set('date.timezone', 'Asia/Jakarta');
 		$this->data['title'] = 'Home';		
 	}
 	
@@ -232,6 +233,7 @@ class Front extends CI_Controller {
 						if($_POST['need'] == 'Meet Someone'){
 							$this->db->select('ID');
 							$this->db->select('EMPLOYEE_NAME');
+							$this->db->select('EMPLOYEE_EMAIL');
 							$this->db->from('EMPLOYEES');		
 							$this->db->where('EMPLOYEE_STATUS', '1');	
 							$names = array('1', $this->data['user_id']);
@@ -243,6 +245,7 @@ class Front extends CI_Controller {
 							if($query->num_rows()==1){
 								foreach($this->data['record11'] as $item){
 									$employee_id = $item->ID;
+									$employee_email = $item->EMPLOYEE_EMAIL;
 								}
 								$this->data['saveddata'] = array(
 										'GUEST_ID' => $guest_id,
@@ -252,6 +255,9 @@ class Front extends CI_Controller {
 									);								
 								$this->db->insert('GUEST_BOOK', $this->data['saveddata']);
 								//redirect(base_url().'front/welcome/'.$this->data['front_page']);
+								//send email
+								$message = 'NOTIFICATION<br><br>You have a guest from<br>Name : '.$_POST['name'].'<br>Email : '.$_POST['email'].'<br>Company : '.$_POST['company'];
+							$this->mail_model->sent_from_gmail($employee_email, 'Guest : '.$_POST['name'], $message, $message);								
 								redirect('front/thanks/2/'.$this->data['front_page']);
 							}else{
 								$this->data['name'] = $_POST['name'];		
@@ -290,7 +296,7 @@ class Front extends CI_Controller {
 										'OTHER_NEEDS' => $_POST['oneed'],
 									);								
 								$this->db->insert('GUEST_BOOK', $this->data['saveddata']);
-								//redirect(base_url().'front/welcome/'.$this->data['front_page']);
+								//redirect(base_url().'front/welcome/'.$this->data['front_page']);								
 								redirect('front/thanks/2/'.$this->data['front_page']);
 						}						
 					}
@@ -388,6 +394,7 @@ class Front extends CI_Controller {
 					
 					$this->db->select('ID');
 					$this->db->select('EMPLOYEE_NAME');
+					$this->db->select('EMPLOYEE_EMAIL');
 					$this->db->from('EMPLOYEES');		
 					$this->db->where('EMPLOYEE_STATUS', '1');	
 					$names = array('1', $this->data['user_id']);
@@ -399,6 +406,7 @@ class Front extends CI_Controller {
 					if($query->num_rows()==1){
 						foreach($this->data['record11'] as $item){
 							$employee_id = $item->ID;
+							$employee_email = $item->EMPLOYEE_EMAIL;
 						}
 						$this->data['saveddata'] = array(
 								'PACKAGE_NAME' => 'Package from '.$_POST['company'].' to '.$_POST['for'],
@@ -407,6 +415,10 @@ class Front extends CI_Controller {
 								'USER_ID' => $_POST['id'],
 							);								
 						$this->db->insert('PACKAGES', $this->data['saveddata']);
+						//send email
+						$message = 'NOTIFICATION<br><br>You get package from '.$_POST['company'].'<br>Date : '.date('F d, Y').'<br>Time : '.date('H:i:s');
+						$this->mail_model->sent_from_gmail($employee_email, 'Package from '.$_POST['company'], $message, $message);
+						
 						redirect('front/thanks/2/'.$this->data['front_page']);							
 					}else{
 						$this->data['company'] = $_POST['company'];
@@ -592,6 +604,22 @@ class Front extends CI_Controller {
 			}
 		}
 	}
+	
+	public function foto($front_id = null){
+		if($front_id == null){
+			redirect('authentication/front_no_permission');
+		}else{
+			if($this->data['user_id'] === null){
+				redirect('authentication/front_no_permission');
+			}else{
+				$this->data['subtitle'] = 'Welcome';			
+				$this->data['role_access'] = array('1','2','3','4','5');	
+				$this->load->view('front_header', $this->data);
+				$this->load->view('front_foto');
+				$this->load->view('front_footer');
+			}
+		}
+	}	
 }
 
 
