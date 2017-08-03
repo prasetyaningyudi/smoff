@@ -24,6 +24,7 @@ class Meeting extends CI_Controller {
 			$this->data['init_data'] = null;
 		}				
 		$this->data['title'] = 'Meeting';
+		$this->load->model('mail_model');
 		ini_set('date.timezone', 'Asia/Jakarta');		
 	}
 
@@ -69,18 +70,49 @@ class Meeting extends CI_Controller {
 		if($id == null){
 			redirect('authentication/no_permission');
 		}else{
-			$this->db->select('ID');
-			$this->db->from('MEETING');			
+			$tables = array('MEETING', 'MEETING_ROOM', 'EMPLOYEES');
+			$this->db->select('MEETING.ID');
+			$this->db->select('MEETING_TIME');
+			$this->db->select('DURATION');
+			$this->db->select('AGENDA');
+			$this->db->select('MEETING_ROOM_ID');
+			$this->db->select('PIC_ID');
+			$this->db->select('ROOM_NAME');
+			$this->db->select('EMPLOYEE_NAME');
+			$this->db->select('EMPLOYEE_EMAIL');
+			$this->db->select('MEETING_STATUS');	
+			$this->db->from($tables);	
+			$this->db->where('MEETING_STATUS != ', '9');	
+			$this->db->where('MEETING.PIC_ID=EMPLOYEES.ID');	
+			$this->db->where('MEETING.MEETING_ROOM_ID=MEETING_ROOM.ID');			
 			$this->db->where('MEETING.ID', $id);
-			$this->db->where('USER_ID', $this->session->userdata['ID']);	
+			$this->db->where('MEETING.USER_ID', $this->session->userdata['ID']);	
 			$query = $this->db->get(); 
 			$this->data['record10'] = $query->result();			
 			if($query->num_rows() == null){
 				redirect('meeting');
 			}else{
+				//var_dump($this->data['record10']);
+				foreach($this->data['record10'] as $item){
+					$agenda = $item->AGENDA;
+					$m_date = date("F d, Y", strtotime($item->MEETING_TIME));
+					$m_time = date("H:i:s", strtotime($item->MEETING_TIME));
+					$duration = $item->DURATION;
+					$room = $item->ROOM_NAME;
+					$pic = $item->EMPLOYEE_NAME;
+					$pic_email = $item->EMPLOYEE_EMAIL;
+				}
+				if($this->data['init_data'] != null){
+					foreach($this->data['init_data'] as $val){
+						$company_meeting = $val->OFFICE_NAME;
+					}
+				}else{
+					$company_meeting = null;
+				}
 				if(isset($_POST['submit'])){
 					$this->db->select('ID');
 					$this->db->select('EMPLOYEE_NAME');
+					$this->db->select('EMPLOYEE_EMAIL');
 					$this->db->from('EMPLOYEES');		
 					$this->db->where('EMPLOYEE_STATUS', '1');	
 					$this->db->where('USER_ID', $this->session->userdata['ID']);	
@@ -99,6 +131,7 @@ class Meeting extends CI_Controller {
 					}else{
 						foreach($this->data['record'] as $item){
 							$employee_id = $item->ID;
+							$employee_email = $item->EMPLOYEE_EMAIL;
 						}					
 						$this->db->select('ID');
 						$this->db->select('EMPLOYEES_ID');
@@ -121,12 +154,17 @@ class Meeting extends CI_Controller {
 								'USER_ID' => $_POST['user']
 							);			
 							$this->db->insert('MEETING_PARTICIPANTS', $this->data['saveddata']);
+							//send mail
+							$message = 'NOTIFICATION<br><br>From : '.$company_meeting.'<br>Agenda : '.$agenda.'<br>Date : '.$m_date.'<br>Time : '.$m_time.'<br>Duration : '.$duration.' hours<br>Room : '.$room.'<br>PIC : '.$pic.'<br>PIC Email : '.$pic_email;
+							$this->mail_model->sent_from_gmail($employee_email, 'Meeting Invitation : '.$agenda, $message, $message);							
+							
 							redirect('meeting/participant/'.$_POST['mid']);							
 						}				
 					}					
 				}else if(isset($_POST['submit_guest'])){
 					$this->db->select('ID');
 					$this->db->select('GUEST_NAME');
+					$this->db->select('GUEST_EMAIL');
 					$this->db->from('GUEST');		
 					$this->db->where('GUEST_STATUS', '1');
 					$this->db->where('USER_ID', $this->session->userdata['ID']);	
@@ -145,6 +183,7 @@ class Meeting extends CI_Controller {
 					}else{
 						foreach($this->data['record'] as $item){
 							$guest_id = $item->ID;
+							$guest_email = $item->GUEST_EMAIL;
 						}					
 						$this->db->select('ID');
 						$this->db->select('GUEST_ID');
@@ -166,6 +205,9 @@ class Meeting extends CI_Controller {
 								'USER_ID' => $_POST['user']
 							);			
 							$this->db->insert('MEETING_PARTICIPANTS', $this->data['saveddata']);
+							//send mail
+							$message = 'NOTIFICATION<br><br>From : '.$company_meeting.'<br>Agenda : '.$agenda.'<br>Date : '.$m_date.'<br>Time : '.$m_time.'<br>Duration : '.$duration.' hours<br>Room : '.$room.'<br>PIC : '.$pic.'<br>PIC Email : '.$pic_email;
+							$this->mail_model->sent_from_gmail($guest_email, 'Meeting Invitation : '.$agenda, $message, $message);									
 							redirect('meeting/participant/'.$_POST['mid']);							
 						}				
 					}				
