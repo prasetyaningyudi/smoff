@@ -33,14 +33,15 @@ class Init_model extends CI_Model {
 			$this->db->where('FRONT_PAGE', $front_page);		
 			$this->db->limit(1);
 			$query = $this->db->get();	 
-			$result = $query->result();	
+			$result = $query->result();
+			$user_id = null;
 			if($result !== null){
 				foreach($result as $item){
 					$user_id = $item->USER_ID;
 				}
 				return $user_id;
 			}else{
-				return null;
+				return $user_id;
 			}
 		}
 }
