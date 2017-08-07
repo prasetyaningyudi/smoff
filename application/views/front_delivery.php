@@ -76,5 +76,4 @@ $( '#for' ).autocomplete({
 			}
 		?>			
 	</form>
-	
 </div>
