@@ -36,16 +36,19 @@ class Upload extends CI_Controller {
 			
 			$fp      = fopen($_FILES['uploadfile']['tmp_name'], 'r');
 			$content = fread($fp, $_FILES['uploadfile']['size']);
-			//$content = addslashes($content);
 			fclose($fp);			
-			
+			$i = strrpos($_FILES['uploadfile']['name'],'.');
+			$ext = substr($_FILES['uploadfile']['name'], $i+1);
 			$this->data['saveddata'] = array(
 				'DATA_FILE' => $content,
 				'TYPE_FILE' => $_FILES['uploadfile']['type'],
+				'EXT_FILE' => $ext,
+				'SIZE_FILE' => $_FILES['uploadfile']['size'],
 			);			
 			$this->db->insert('FILE', $this->data['saveddata']);			
 			
 		}
+		
 		$this->data['subtitle'] = 'Tes';			
 		$this->data['data_table'] = 'no';
 		$this->data['role_access'] = array('5');				
@@ -57,6 +60,54 @@ class Upload extends CI_Controller {
 		$this->load->view('section_content_title');
 		$this->load->view('upload_index');
 		$this->load->view('section_footer');			
+	}
+	
+	public function view(){
+		$this->db->select('ID');
+		$this->db->select('DATA_FILE');
+		$this->db->select('TYPE_FILE');
+		$this->db->select('EXT_FILE');
+		$this->db->from('FILE');		
+		$this->db->where('ID', '1');		
+		$query = $this->db->get(); 
+		$this->data['record'] = $query->result();
+		foreach($this->data['record'] as $item){
+			$img = $item->DATA_FILE;
+		}
+
+		
+		$this->data['subtitle'] = 'Download';			
+		$this->data['data_table'] = 'no';
+		$this->data['role_access'] = array('5');		
+		echo '<img src="data:image/jpeg;base64,'.base64_encode( $img ).'"/>';		
+	}
+	
+	public function download($id=null){
+		if($id != null){
+			$this->db->select('ID');
+			$this->db->select('DATA_FILE');
+			$this->db->select('TYPE_FILE');
+			$this->db->select('SIZE_FILE');
+			$this->db->select('EXT_FILE');
+			$this->db->from('FILE');		
+			$this->db->where('ID', $id);		
+			$query = $this->db->get(); 
+			$this->data['record'] = $query->result();
+			foreach($this->data['record'] as $item){
+				$img = $item->DATA_FILE;
+				$type = $item->TYPE_FILE;
+				$size = $item->SIZE_FILE;
+				$ext = $item->EXT_FILE;
+			}			
+			header("Content-length: $size");
+			header("Content-type: $type");
+			header("Content-Disposition: attachment; filename=tesdownload.jpg");
+			header("Content-Transfer-Encoding: binary");
+			ob_clean();
+			flush();
+			echo $img;			
+			
+		}
 	}
 	
 }
