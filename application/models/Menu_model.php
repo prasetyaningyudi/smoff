@@ -3,12 +3,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Menu_model extends CI_Model {
 
-        public function __construct(){
+		public function __construct(){
 			// Call the CI_Model constructor
 			parent::__construct();
-        }
+		}
 
-        public function get_menu(){
+		public function get_menu(){
 			$this->db->select('ID');
 			$this->db->select('MENU_NAME');
 			$this->db->select('PERMALINK');
@@ -22,9 +22,9 @@ class Menu_model extends CI_Model {
 			$this->db->order_by('ID, MENU_ORDER');			
 			$query = $this->db->get(); 
 			return $query->result();
-        }
+		}
 		
-        public function get_sub_menu(){
+		public function get_sub_menu(){
 			$this->db->select('ID');
 			$this->db->select('MENU_NAME');
 			$this->db->select('PERMALINK');
@@ -39,7 +39,7 @@ class Menu_model extends CI_Model {
 			$this->db->order_by('MENU_ORDER');		
 			$query = $this->db->get(); 
 			return $query->result();
-        }		
+		}		
 		
 		private function cek_role(){
 			$this->load->library('session');

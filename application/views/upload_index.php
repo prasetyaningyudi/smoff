@@ -4,7 +4,7 @@
 					<div class="form-group">
 					<label for="name" class="col-sm-2">Upload File:<br></label>
 					<div class="col-sm-10">
-					<input type="hidden" name="MAX_FILE_SIZE" value="5000000" />
+					<input type="hidden" name="MAX_FILE_SIZE" value="5000" />
 					<input class="form-control input-lg" id="uploadfile" type="file" name="uploadfile" value="" placeholder="Upload File" required>
 					</div>
 					</div>			

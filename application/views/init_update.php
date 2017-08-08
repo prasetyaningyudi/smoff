@@ -1,5 +1,5 @@
 			  <div class="panel-body">
-					<form action="" id="inputform" method="post" class="form-horizontal">
+					<form action="" id="inputform" method="post" enctype="multipart/form-data" class="form-horizontal">
 					  <fieldset>
 					  <?php foreach ($record as $item):?>
 						<div class="form-group">	
@@ -13,19 +13,29 @@
 						<div class="col-sm-10">		
 						<input class="form-control" id="office" type="text" name="office" value="<?php echo $item->OFFICE_NAME;?>" placeholder="Office Name" required>
 						</div>
-						</div>	
-						<div class="form-group">	
-						<label for="ficon" class="col-sm-2">Front Icon:<br></label>
-						<div class="col-sm-10">		
-						<input class="form-control" id="ficon" type="text" name="ficon" value="<?php echo $item->FRONT_ICON;?>" placeholder="Check available list at http://fontawesome.io/icons/ example (quora, book, bank, etc)" required>
 						</div>
+						<?php if($item->FILE_ID != ''): ?>
+						<div class="form-group">	
+						<label for="flogo" class="col-sm-2">Front Logo:<br></label>
+						<div class="col-sm-10">		
+						<a class="btn btn-block btn-info btn-md" target="_blank" href="<?php echo base_url().'upload/view/'.$item->FILE_ID; ?>">front_logo</a>
+						</div>
+						</div>
+						<?php endif; ?>
+						<div class="form-group">	
+						<label for="flogo" class="col-sm-2">Update Front Logo:<br></label>
+						<div class="col-sm-6">		
+						<input type="hidden" name="MAX_FILE_SIZE" value="2000000" />
+						<input class="form-control" id="flogo" type="file" name="flogo" value="" placeholder="Upload File" accept=".jpg, .jpeg, .png">
+						</div>
+						<label for="flogo" class="col-sm-4">Image format JPG, JPEG or PNG (Max 2MB)<br></label>
 						</div>
 						<div class="form-group">	
 						<label for="fpage" class="col-sm-2">Front Page:<br></label>
-						<div class="col-sm-7">		
+						<div class="col-sm-6">		
 						<input class="form-control" id="fpage" type="text" name="fpage" value="<?php echo $item->FRONT_PAGE;?>" placeholder="Input front page address with nospace, max 10 character" maxlength="10" readonly required>
 						</div>
-						<div class="col-sm-3"><a target="_blank" class="btn btn-block btn-info btn-md" href="<?php echo base_url().'front/start/'.$item->FRONT_PAGE; ?>">Visiting <?php echo $item->FRONT_PAGE;?></a>
+						<div class="col-sm-4"><a target="_blank" class="btn btn-block btn-info btn-md" href="<?php echo base_url().'front/start/'.$item->FRONT_PAGE; ?>">Visiting <?php echo $item->FRONT_PAGE;?></a>
 						</div>						
 						</div>						  
 						<div class="form-group">	
@@ -50,6 +60,7 @@
 						</div>					  
 						</div>							
 						<input type="hidden" name="id" value="<?php echo $item->ID; ?>">
+						<input type="hidden" name="fid" value="<?php echo $item->FILE_ID; ?>">
 						<input type="hidden" name="user" value="<?php echo $this->session->userdata['ID']; ?>">
 						<div class="form-group">
 						<div class="col-sm-2">

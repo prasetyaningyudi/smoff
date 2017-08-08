@@ -36,6 +36,24 @@ class Front extends CI_Controller {
 			if($this->data['user_id'] === null){
 				redirect('authentication/front_no_permission');
 			}else{
+				if($this->data['init_data'] != null){
+					foreach($this->data['init_data'] as $item){
+						$this->data['file_id'] = $item->FILE_ID;
+					}
+					if($this->data['file_id'] != ''){
+						$this->db->select('ID');
+						$this->db->select('DATA_FILE');
+						$this->db->select('TYPE_FILE');
+						$this->db->select('EXT_FILE');
+						$this->db->from('FILE');		
+						$this->db->where('ID', $this->data['file_id']);		
+						$query = $this->db->get(); 
+						$this->data['record'] = $query->result();
+						foreach($this->data['record'] as $item){
+							$this->data['flogo'] = $item->DATA_FILE;
+						}
+					}
+				}				
 				$this->data['subtitle'] = 'Start';			
 				$this->data['role_access'] = array('1','2','3','4','5');	
 				$this->load->view('front_header', $this->data);

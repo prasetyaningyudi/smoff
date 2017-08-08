@@ -16,6 +16,7 @@ class Init_model extends CI_Model {
 			$this->db->select('FRONT_ICON');	
 			$this->db->select('THEME');	
 			$this->db->select('FRONT_PAGE');	
+			$this->db->select('FILE_ID');	
 			$this->db->from('INIT_DATA');
 			$this->db->where('USER_ID', $user_id);		
 			$this->db->limit(1);

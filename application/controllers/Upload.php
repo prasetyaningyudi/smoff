@@ -23,7 +23,7 @@ class Upload extends CI_Controller {
 		}else{
 			$this->data['init_data'] = null;
 		}
-		$this->data['title'] = 'Upload';		
+		$this->data['title'] = 'File';		
 	}
 	
 	public function index(){
@@ -62,24 +62,25 @@ class Upload extends CI_Controller {
 		$this->load->view('section_footer');			
 	}
 	
-	public function view(){
-		$this->db->select('ID');
-		$this->db->select('DATA_FILE');
-		$this->db->select('TYPE_FILE');
-		$this->db->select('EXT_FILE');
-		$this->db->from('FILE');		
-		$this->db->where('ID', '1');		
-		$query = $this->db->get(); 
-		$this->data['record'] = $query->result();
-		foreach($this->data['record'] as $item){
-			$img = $item->DATA_FILE;
-		}
+	public function view($id=null){
+		if($id != null){
+			$this->db->select('ID');
+			$this->db->select('DATA_FILE');
+			$this->db->select('TYPE_FILE');
+			$this->db->select('EXT_FILE');
+			$this->db->from('FILE');		
+			$this->db->where('ID', $id);		
+			$query = $this->db->get(); 
+			$this->data['record'] = $query->result();
+			foreach($this->data['record'] as $item){
+				$img = $item->DATA_FILE;
+			}
 
-		
-		$this->data['subtitle'] = 'Download';			
-		$this->data['data_table'] = 'no';
-		$this->data['role_access'] = array('5');		
-		echo '<img src="data:image/jpeg;base64,'.base64_encode( $img ).'"/>';		
+			$this->data['subtitle'] = 'Download';			
+			$this->data['data_table'] = 'no';
+			$this->data['role_access'] = array('1','2','3','4','5');		
+			echo '<img src="data:image/jpeg;base64,'.base64_encode( $img ).'"/>';									
+		}	
 	}
 	
 	public function download($id=null){

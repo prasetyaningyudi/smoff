@@ -1,5 +1,5 @@
 			  <div class="panel-body">
-					<form action="" id="inputform" method="post" class="form-horizontal">
+					<form action="" id="inputform" method="post" enctype="multipart/form-data" class="form-horizontal">
 					  <fieldset>
 						<div class="form-group">	
 						<label for="app" class="col-sm-2">Application Name:<br></label>
@@ -14,10 +14,12 @@
 						</div>
 						</div>	
 						<div class="form-group">	
-						<label for="ficon" class="col-sm-2">Front Icon:<br></label>
-						<div class="col-sm-10">		
-						<input class="form-control" id="ficon" type="text" name="ficon" value="" placeholder="Check available list at http://fontawesome.io/icons/ example (quora, book, bank, etc)" required>
+						<label for="flogo" class="col-sm-2">Front Logo:<br></label>
+						<div class="col-sm-6">		
+						<input type="hidden" name="MAX_FILE_SIZE" value="2000000" />
+						<input class="form-control" id="flogo" type="file" name="flogo" value="" placeholder="Upload File" accept=".jpg, .jpeg, .png">
 						</div>
+						<label for="flogo" class="col-sm-4">Image format JPG, JPEG or PNG (Max 2MB)<br></label>
 						</div>
 						<div class="form-group">	
 						<label for="fpage" class="col-sm-2">Front Page:<br></label>
