@@ -4,19 +4,35 @@
 						<?php if($valid === TRUE): ?>
 							<h4>How are you today? Feels good right.<br>Lets start your work with access menus on the left sidebar. </h4>
 						<?php else: ?>
-							<?php if($this->session->userdata['ROLE_ID'] == '4'): ?>	
-								<h4>Ops, It looks like it's first time you login, Please input some initial data first</h4>
-								<div class="row">
-									<div class="col-sm-3">
-										<a class="btn btn-primary btn-lg btn-square" href="<?php echo base_url()."home/init_data"; ?>" role="button">Initial Data</a>
+							<?php if($this->session->userdata['ROLE_ID'] == '4'): ?>
+								<?php if($message == 'signup_success'): ?>
+									<div>
+									<h4>Your Registration has ben successful, Please input some initial data first</h4>
+									<div class="row">
+										<div class="col-sm-3">
+											<a class="btn btn-primary btn-lg btn-square" href="<?php echo base_url()."home/init_data"; ?>" role="button">Initial Data</a>
+										</div>
+										<div class="col-sm-3">
+											
+										</div>
+										<div class="col-sm-3">
+											
+										</div>							
+									</div>					
+								<?php else: ?>							
+									<h4>Ops, It looks like it's first time you login, Please input some initial data first</h4>
+									<div class="row">
+										<div class="col-sm-3">
+											<a class="btn btn-primary btn-lg btn-square" href="<?php echo base_url()."home/init_data"; ?>" role="button">Initial Data</a>
+										</div>
+										<div class="col-sm-3">
+											
+										</div>
+										<div class="col-sm-3">
+											
+										</div>							
 									</div>
-									<div class="col-sm-3">
-										
-									</div>
-									<div class="col-sm-3">
-										
-									</div>							
-								</div>									
+								<?php endif; ?>	
 							<?php else: ?>
 								<h4>How are you today? Feels good right.<br>Lets start your work with access menus on the left sidebar. </h4>
 								<div class="row">

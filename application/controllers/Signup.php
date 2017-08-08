@@ -29,33 +29,39 @@ class Signup extends CI_Controller {
 	
 	public function index(){				
 		if(isset($_POST['submit'])){
-			$this->db->select('ID');
-			$this->db->select('USERNAME');
-			$this->db->from('USER');
-			$this->db->where('USER_STATUS!=', '9');
-			$this->db->where('USERNAME', $_POST['email']);
-			$query = $this->db->get();
-			if($query->num_rows()==1){
+			if(!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)){
 				$this->data['warning'] = array(
-					'text' => 'Ops, Email already registered, Try a new one.',
-				);	
+					'text' => 'Ops, Email not valid try a new one',
+				);					
 			}else{
-				//insert ke database
-				$this->data['saveddata'] = array(
-					'USERNAME' => $_POST['email'],
-					'PASSWORD' => md5($_POST['email']),
-					'USER_ALIAS' => $_POST['name'],
-					'USER_STATUS' => '5',
-					'ROLE_ID' => 4
-				);			
-				$this->db->insert('USER', $this->data['saveddata']);
-				$id = $this->db->insert_id();
-				
-				//sent mail
-				$linkConfirmation = '<a href="'.base_url().'signup/signup_conf/'.md5($_POST['email']).'">'.base_url().'signup/signup_conf/'.md5($_POST['email']).'</a>';
-				$message = 'Thank for your sign up<br>Please click this link '.$linkConfirmation.' to complete your registration.';
-				$this->mail_model->sent_from_gmail($_POST['email'], 'Mail confirmation', $message, $message);
-				redirect('signup/email_conf/'.$id);		
+				$this->db->select('ID');
+				$this->db->select('USERNAME');
+				$this->db->from('USER');
+				$this->db->where('USER_STATUS!=', '9');
+				$this->db->where('USERNAME', $_POST['email']);
+				$query = $this->db->get();				
+				if($query->num_rows()==1){
+					$this->data['warning'] = array(
+						'text' => 'Ops, Email already registered, Try a new one.',
+					);	
+				}else{
+					//insert ke database
+					$this->data['saveddata'] = array(
+						'USERNAME' => $_POST['email'],
+						'PASSWORD' => md5($_POST['email']),
+						'USER_ALIAS' => $_POST['name'],
+						'USER_STATUS' => '5',
+						'ROLE_ID' => 4
+					);			
+					$this->db->insert('USER', $this->data['saveddata']);
+					$id = $this->db->insert_id();
+					
+					//sent mail
+					$linkConfirmation = '<a href="'.base_url().'signup/signup_conf/'.md5($_POST['email']).'">'.base_url().'signup/signup_conf/'.md5($_POST['email']).'</a>';
+					$message = 'Thank for your sign up<br>Please click this link '.$linkConfirmation.' to complete your registration.';
+					$this->mail_model->sent_from_gmail($_POST['email'], 'Mail confirmation', $message, $message);
+					redirect('signup/email_conf/'.$id);		
+				}				
 			}
 		}
 		$this->data['subtitle'] = '';			
@@ -118,7 +124,7 @@ class Signup extends CI_Controller {
 				if(isset($_POST['submit'])){
 					if($_POST['password'] != $_POST['password2']){
 						$this->data['warning'] = array(
-							'text' => 'Ops, Please ensure you type repeat password same with password.',
+							'text' => 'Ops, Please ensure you type confirm password same with password.',
 						);
 					}else{
 						//insert ke database
@@ -128,6 +134,34 @@ class Signup extends CI_Controller {
 							);								
 						$this->db->where('ID', $_POST['id']);
 						$this->db->update('USER', $this->data['saveddata']);
+						
+						//add login session
+						$tables = array('ROLE', 'USER');
+						$this->db->select('USER.ID');
+						$this->db->select('USER.USERNAME');
+						$this->db->select('USER.USER_ALIAS');
+						$this->db->select('USER.ROLE_ID');
+						$this->db->select('ROLE.ROLE_NAME');
+						$this->db->from($tables);
+						$this->db->where('USER.ID', $_POST['id']);	
+						$this->db->where('ROLE.ID=USER.ROLE_ID');
+						$this->db->where('USER_STATUS','1');		
+						$query = $this->db->get(); 
+						$result = $query->result();	
+						
+						foreach($result as $item){
+							$data_session=array(
+								'ID'=>$item->ID,
+								'USERNAME'=>$item->USERNAME,
+								'USER_ALIAS'=>$item->USER_ALIAS,
+								'ROLE_ID'=>$item->ROLE_ID,
+								'ROLE_NAME'=>$item->ROLE_NAME,
+								'is_logged_in'=>1
+							);
+						}
+						$this->session->sess_expiration = '2';
+						$this->session->sess_expire_on_close = 'true';
+						$this->session->set_userdata($data_session);							
 						redirect('home/welcome/signup_success');							
 					}
 				}

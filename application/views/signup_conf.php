@@ -23,9 +23,9 @@
 						</div>
 						</div>
 						<div class="form-group">	
-						<label for="password2" class="col-sm-2 hidden-sm-xs">Repeat Password:<br></label>
+						<label for="password2" class="col-sm-2 hidden-sm-xs">Confirm Password:<br></label>
 						<div class="col-sm-10">		
-						<input class="form-control input-lg" id="password2" type="password" name="password2" value="" placeholder="Repeat Password" required>
+						<input class="form-control input-lg" id="password2" type="password" name="password2" value="" placeholder="Confirm Password" required>
 						</div>
 						</div>					
 					<div class="form-group">

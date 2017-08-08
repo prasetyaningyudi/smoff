@@ -85,11 +85,24 @@ class Authentication extends CI_Controller {
 			$this->db->where('INIT_DATA.USER_ID',$uid);		
 			$query = $this->db->get(); 
 			$result = $query->result();	
-			
+			$front_page = null;
 			foreach($result as $item){
 				$front_page = $item->FRONT_PAGE;
 			}
-			redirect('front/start/'.$front_page);
+			if($front_page != null){
+				redirect('front/start/'.$front_page);
+			}else{
+				$this->data['warning'] = array(
+					'text' => 'Please set your front page at at menu Initial Data',
+				);
+				$this->data['data_table'] = 'no';		
+				$this->data['subtitle'] = 'Warning';	
+				$this->data['role_access'] = array('1','2','3','4');				
+				//view
+				$this->load->view('front_header', $this->data);
+				$this->load->view('m_warning');
+				$this->load->view('front_footer');				
+			}
 		}else{
 			$this->data['warning'] = array(
 				'text' => 'Ops, Something wrong with username or password',

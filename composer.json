@@ -12,7 +12,8 @@
 	},
 	"require": {
 		"php": ">=5.2.4",
-		"phpmailer/phpmailer": "^5.2"
+		"phpmailer/phpmailer": "^5.2",
+		"kartik-v/bootstrap-fileinput": "dev-master"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"

@@ -5,43 +5,21 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
 -- -----------------------------------------------------
--- Schema bukn1459_guestbook
+-- Schema smoff
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema bukn1459_guestbook
+-- Schema smoff
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `bukn1459_guestbook` DEFAULT CHARACTER SET utf8 ;
--- -----------------------------------------------------
--- Schema bukn1459_guestbook
--- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `smoff` DEFAULT CHARACTER SET utf8 ;
+USE `smoff` ;
 
 -- -----------------------------------------------------
--- Schema bukn1459_guestbook
+-- Table `smoff`.`ROLE`
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `bukn1459_guestbook` DEFAULT CHARACTER SET utf8 ;
-USE `bukn1459_guestbook` ;
+DROP TABLE IF EXISTS `smoff`.`ROLE` ;
 
--- -----------------------------------------------------
--- Table `bukn1459_guestbook`.`FILE`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `bukn1459_guestbook`.`FILE` ;
-
-CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`FILE` (
-  `ID` INT NOT NULL AUTO_INCREMENT,
-  `DATA_FILE` MEDIUMBLOB NOT NULL,
-  `FILE_TYPE` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`ID`))
-ENGINE = MyISAM;
-
-USE `bukn1459_guestbook` ;
-
--- -----------------------------------------------------
--- Table `bukn1459_guestbook`.`ROLE`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `bukn1459_guestbook`.`ROLE` ;
-
-CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`ROLE` (
+CREATE TABLE IF NOT EXISTS `smoff`.`ROLE` (
   `ID` INT(11) NOT NULL AUTO_INCREMENT,
   `ROLE_NAME` VARCHAR(45) NOT NULL,
   `CREATE_DATE` DATETIME NOT NULL DEFAULT NOW(),
@@ -53,11 +31,26 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `bukn1459_guestbook`.`USER`
+-- Table `smoff`.`FILE`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `bukn1459_guestbook`.`USER` ;
+DROP TABLE IF EXISTS `smoff`.`FILE` ;
 
-CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`USER` (
+CREATE TABLE IF NOT EXISTS `smoff`.`FILE` (
+  `ID` INT NOT NULL AUTO_INCREMENT,
+  `DATA_FILE` MEDIUMBLOB NOT NULL,
+  `TYPE_FILE` TEXT NOT NULL,
+  `CREATE_DATE` DATETIME NOT NULL DEFAULT NOW(),
+  `UPDATE_DATE` DATETIME NOT NULL DEFAULT NOW() ON UPDATE NOW(),
+  PRIMARY KEY (`ID`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `smoff`.`USER`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `smoff`.`USER` ;
+
+CREATE TABLE IF NOT EXISTS `smoff`.`USER` (
   `ID` INT(11) NOT NULL AUTO_INCREMENT,
   `USERNAME` VARCHAR(255) NOT NULL,
   `PASSWORD` VARCHAR(255) NOT NULL,
@@ -66,24 +59,31 @@ CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`USER` (
   `ROLE_ID` INT(11) NOT NULL,
   `CREATE_DATE` DATETIME NOT NULL DEFAULT NOW(),
   `UPDATE_DATE` DATETIME NOT NULL DEFAULT NOW() ON UPDATE NOW(),
+  `FILE_ID` INT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE INDEX `USERNAME_UNIQUE` (`USERNAME` ASC),
   INDEX `fk_USER_ROLE_idx` (`ROLE_ID` ASC),
+  INDEX `fk_USER_FILE1_idx` (`FILE_ID` ASC),
   CONSTRAINT `fk_USER_ROLE`
     FOREIGN KEY (`ROLE_ID`)
-    REFERENCES `bukn1459_guestbook`.`ROLE` (`ID`)
+    REFERENCES `smoff`.`ROLE` (`ID`)
     ON DELETE NO ACTION
-    ON UPDATE CASCADE)
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_USER_FILE1`
+    FOREIGN KEY (`FILE_ID`)
+    REFERENCES `smoff`.`FILE` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `bukn1459_guestbook`.`REF_TYPE`
+-- Table `smoff`.`REF_TYPE`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `bukn1459_guestbook`.`REF_TYPE` ;
+DROP TABLE IF EXISTS `smoff`.`REF_TYPE` ;
 
-CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`REF_TYPE` (
+CREATE TABLE IF NOT EXISTS `smoff`.`REF_TYPE` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `REF_TYPE_NAME` TEXT NOT NULL,
   `REF_TYPE_STATUS` VARCHAR(1) NOT NULL DEFAULT '1',
@@ -94,11 +94,11 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `bukn1459_guestbook`.`REF_GENERAL`
+-- Table `smoff`.`REF_GENERAL`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `bukn1459_guestbook`.`REF_GENERAL` ;
+DROP TABLE IF EXISTS `smoff`.`REF_GENERAL` ;
 
-CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`REF_GENERAL` (
+CREATE TABLE IF NOT EXISTS `smoff`.`REF_GENERAL` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `REF_NAME` TEXT NOT NULL,
   `REF_STATUS` VARCHAR(1) NOT NULL DEFAULT '1',
@@ -109,18 +109,18 @@ CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`REF_GENERAL` (
   INDEX `fk_REF_GENERAL_REF_TYPE1_idx` (`REF_TYPE_ID` ASC),
   CONSTRAINT `fk_REF_GENERAL_REF_TYPE1`
     FOREIGN KEY (`REF_TYPE_ID`)
-    REFERENCES `bukn1459_guestbook`.`REF_TYPE` (`ID`)
+    REFERENCES `smoff`.`REF_TYPE` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `bukn1459_guestbook`.`COMPANY`
+-- Table `smoff`.`COMPANY`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `bukn1459_guestbook`.`COMPANY` ;
+DROP TABLE IF EXISTS `smoff`.`COMPANY` ;
 
-CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`COMPANY` (
+CREATE TABLE IF NOT EXISTS `smoff`.`COMPANY` (
   `ID` INT(11) NOT NULL AUTO_INCREMENT,
   `COMPANY_NAME` VARCHAR(255) NOT NULL,
   `COMPANY_STATUS` VARCHAR(1) NOT NULL DEFAULT '1',
@@ -133,12 +133,12 @@ CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`COMPANY` (
   INDEX `fk_COMPANY_REF_GENERAL1_idx` (`REF_GENERAL_ID` ASC),
   CONSTRAINT `fk_COMPANY_USER1`
     FOREIGN KEY (`USER_ID`)
-    REFERENCES `bukn1459_guestbook`.`USER` (`ID`)
+    REFERENCES `smoff`.`USER` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_COMPANY_REF_GENERAL1`
     FOREIGN KEY (`REF_GENERAL_ID`)
-    REFERENCES `bukn1459_guestbook`.`REF_GENERAL` (`ID`)
+    REFERENCES `smoff`.`REF_GENERAL` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -146,11 +146,11 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `bukn1459_guestbook`.`DIVISION`
+-- Table `smoff`.`DIVISION`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `bukn1459_guestbook`.`DIVISION` ;
+DROP TABLE IF EXISTS `smoff`.`DIVISION` ;
 
-CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`DIVISION` (
+CREATE TABLE IF NOT EXISTS `smoff`.`DIVISION` (
   `ID` INT(11) NOT NULL AUTO_INCREMENT,
   `DIVISION_NAME` TEXT NOT NULL,
   `DIVISION_STATUS` VARCHAR(1) NOT NULL DEFAULT '1',
@@ -163,12 +163,12 @@ CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`DIVISION` (
   INDEX `fk_DIVISION_USER1_idx` (`USER_ID` ASC),
   CONSTRAINT `fk_DIVISION_DIVISION1`
     FOREIGN KEY (`DIVISION_TOP_ID`)
-    REFERENCES `bukn1459_guestbook`.`DIVISION` (`ID`)
+    REFERENCES `smoff`.`DIVISION` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_DIVISION_USER1`
     FOREIGN KEY (`USER_ID`)
-    REFERENCES `bukn1459_guestbook`.`USER` (`ID`)
+    REFERENCES `smoff`.`USER` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -176,11 +176,11 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `bukn1459_guestbook`.`EMPLOYEES`
+-- Table `smoff`.`EMPLOYEES`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `bukn1459_guestbook`.`EMPLOYEES` ;
+DROP TABLE IF EXISTS `smoff`.`EMPLOYEES` ;
 
-CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`EMPLOYEES` (
+CREATE TABLE IF NOT EXISTS `smoff`.`EMPLOYEES` (
   `ID` INT(11) NOT NULL AUTO_INCREMENT,
   `EMPLOYEE_NAME` TEXT NOT NULL,
   `EMPLOYEE_EMAIL` TEXT NOT NULL,
@@ -199,22 +199,22 @@ CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`EMPLOYEES` (
   INDEX `fk_EMPLOYEES_FILE1_idx` (`FILE_ID` ASC),
   CONSTRAINT `fk_EMPLOYEES_USER1`
     FOREIGN KEY (`USER_ID`)
-    REFERENCES `bukn1459_guestbook`.`USER` (`ID`)
+    REFERENCES `smoff`.`USER` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_EMPLOYEES_EMPLOYEES1`
     FOREIGN KEY (`EMPLOYEES_TOP_ID`)
-    REFERENCES `bukn1459_guestbook`.`EMPLOYEES` (`ID`)
+    REFERENCES `smoff`.`EMPLOYEES` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_EMPLOYEES_DIVISION1`
     FOREIGN KEY (`DIVISION_ID`)
-    REFERENCES `bukn1459_guestbook`.`DIVISION` (`ID`)
+    REFERENCES `smoff`.`DIVISION` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_EMPLOYEES_FILE1`
     FOREIGN KEY (`FILE_ID`)
-    REFERENCES `bukn1459_guestbook`.`FILE` (`ID`)
+    REFERENCES `smoff`.`FILE` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -222,11 +222,11 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `bukn1459_guestbook`.`PACKAGES`
+-- Table `smoff`.`PACKAGES`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `bukn1459_guestbook`.`PACKAGES` ;
+DROP TABLE IF EXISTS `smoff`.`PACKAGES` ;
 
-CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`PACKAGES` (
+CREATE TABLE IF NOT EXISTS `smoff`.`PACKAGES` (
   `ID` INT(11) NOT NULL AUTO_INCREMENT,
   `PACKAGE_NAME` TEXT NOT NULL,
   `EMPLOYEES_ID` INT(11) NOT NULL,
@@ -241,17 +241,17 @@ CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`PACKAGES` (
   INDEX `fk_BARANG_INSTANSI1_idx` (`COMPANY_ID` ASC),
   CONSTRAINT `fk_BARANG_INSTANSI1`
     FOREIGN KEY (`COMPANY_ID`)
-    REFERENCES `bukn1459_guestbook`.`COMPANY` (`ID`)
+    REFERENCES `smoff`.`COMPANY` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE,
   CONSTRAINT `fk_BARANG_PEGAWAI1`
     FOREIGN KEY (`EMPLOYEES_ID`)
-    REFERENCES `bukn1459_guestbook`.`EMPLOYEES` (`ID`)
+    REFERENCES `smoff`.`EMPLOYEES` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE,
   CONSTRAINT `fk_BARANG_USER1`
     FOREIGN KEY (`USER_ID`)
-    REFERENCES `bukn1459_guestbook`.`USER` (`ID`)
+    REFERENCES `smoff`.`USER` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE)
 ENGINE = InnoDB
@@ -259,11 +259,11 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `bukn1459_guestbook`.`GUEST`
+-- Table `smoff`.`GUEST`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `bukn1459_guestbook`.`GUEST` ;
+DROP TABLE IF EXISTS `smoff`.`GUEST` ;
 
-CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`GUEST` (
+CREATE TABLE IF NOT EXISTS `smoff`.`GUEST` (
   `ID` INT(11) NOT NULL AUTO_INCREMENT,
   `GUEST_NAME` TEXT NOT NULL,
   `GUEST_EMAIL` VARCHAR(255) NULL,
@@ -280,28 +280,28 @@ CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`GUEST` (
   INDEX `fk_GUEST_FILE1_idx` (`FILE_ID` ASC),
   CONSTRAINT `fk_GUEST_USER1`
     FOREIGN KEY (`USER_ID`)
-    REFERENCES `bukn1459_guestbook`.`USER` (`ID`)
+    REFERENCES `smoff`.`USER` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_GUEST_COMPANY1`
     FOREIGN KEY (`COMPANY_ID`)
-    REFERENCES `bukn1459_guestbook`.`COMPANY` (`ID`)
+    REFERENCES `smoff`.`COMPANY` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_GUEST_FILE1`
     FOREIGN KEY (`FILE_ID`)
-    REFERENCES `bukn1459_guestbook`.`FILE` (`ID`)
+    REFERENCES `smoff`.`FILE` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `bukn1459_guestbook`.`MEETING_ROOM`
+-- Table `smoff`.`MEETING_ROOM`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `bukn1459_guestbook`.`MEETING_ROOM` ;
+DROP TABLE IF EXISTS `smoff`.`MEETING_ROOM` ;
 
-CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`MEETING_ROOM` (
+CREATE TABLE IF NOT EXISTS `smoff`.`MEETING_ROOM` (
   `ID` INT(11) NOT NULL AUTO_INCREMENT,
   `ROOM_NAME` VARCHAR(255) NOT NULL,
   `ROOM_STATUS` VARCHAR(1) NOT NULL DEFAULT '1',
@@ -313,7 +313,7 @@ CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`MEETING_ROOM` (
   UNIQUE INDEX `ROOM_NAME_UNIQUE` (`ROOM_NAME` ASC),
   CONSTRAINT `fk_MEETING_ROOM_USER1`
     FOREIGN KEY (`USER_ID`)
-    REFERENCES `bukn1459_guestbook`.`USER` (`ID`)
+    REFERENCES `smoff`.`USER` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -321,11 +321,11 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `bukn1459_guestbook`.`MEETING`
+-- Table `smoff`.`MEETING`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `bukn1459_guestbook`.`MEETING` ;
+DROP TABLE IF EXISTS `smoff`.`MEETING` ;
 
-CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`MEETING` (
+CREATE TABLE IF NOT EXISTS `smoff`.`MEETING` (
   `ID` INT(11) NOT NULL AUTO_INCREMENT,
   `MEETING_TIME` DATETIME NOT NULL,
   `DURATION` INT(11) NOT NULL,
@@ -336,23 +336,30 @@ CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`MEETING` (
   `MEETING_ROOM_ID` INT(11) NOT NULL,
   `MEETING_STATUS` VARCHAR(1) NOT NULL DEFAULT '1',
   `PIC_ID` INT(11) NULL,
+  `FILE_ID` INT NULL,
   PRIMARY KEY (`ID`),
   INDEX `fk_RAPAT_USER1_idx` (`USER_ID` ASC),
   INDEX `fk_MEETING_MEETING_ROOM1_idx` (`MEETING_ROOM_ID` ASC),
   INDEX `fk_MEETING_EMPLOYEES1_idx` (`PIC_ID` ASC),
+  INDEX `fk_MEETING_FILE1_idx` (`FILE_ID` ASC),
   CONSTRAINT `fk_RAPAT_USER1`
     FOREIGN KEY (`USER_ID`)
-    REFERENCES `bukn1459_guestbook`.`USER` (`ID`)
+    REFERENCES `smoff`.`USER` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE,
   CONSTRAINT `fk_MEETING_MEETING_ROOM1`
     FOREIGN KEY (`MEETING_ROOM_ID`)
-    REFERENCES `bukn1459_guestbook`.`MEETING_ROOM` (`ID`)
+    REFERENCES `smoff`.`MEETING_ROOM` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_MEETING_EMPLOYEES1`
     FOREIGN KEY (`PIC_ID`)
-    REFERENCES `bukn1459_guestbook`.`EMPLOYEES` (`ID`)
+    REFERENCES `smoff`.`EMPLOYEES` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_MEETING_FILE1`
+    FOREIGN KEY (`FILE_ID`)
+    REFERENCES `smoff`.`FILE` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -360,11 +367,11 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `bukn1459_guestbook`.`GUEST_BOOK`
+-- Table `smoff`.`GUEST_BOOK`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `bukn1459_guestbook`.`GUEST_BOOK` ;
+DROP TABLE IF EXISTS `smoff`.`GUEST_BOOK` ;
 
-CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`GUEST_BOOK` (
+CREATE TABLE IF NOT EXISTS `smoff`.`GUEST_BOOK` (
   `ID` INT(11) NOT NULL AUTO_INCREMENT,
   `USER_ID` INT(11) NOT NULL,
   `GUEST_ID` INT NOT NULL,
@@ -386,32 +393,32 @@ CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`GUEST_BOOK` (
   INDEX `fk_GUEST_BOOK_MEETING1_idx` (`MEETING_ID` ASC),
   CONSTRAINT `fk_GUEST_BOOK_USER1`
     FOREIGN KEY (`USER_ID`)
-    REFERENCES `bukn1459_guestbook`.`USER` (`ID`)
+    REFERENCES `smoff`.`USER` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_GUEST_BOOK_GUEST1`
     FOREIGN KEY (`GUEST_ID`)
-    REFERENCES `bukn1459_guestbook`.`GUEST` (`ID`)
+    REFERENCES `smoff`.`GUEST` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_GUEST_BOOK_DIVISION1`
     FOREIGN KEY (`DIVISION_ID`)
-    REFERENCES `bukn1459_guestbook`.`DIVISION` (`ID`)
+    REFERENCES `smoff`.`DIVISION` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_GUEST_BOOK_EMPLOYEES1`
     FOREIGN KEY (`EMPLOYEES_ID`)
-    REFERENCES `bukn1459_guestbook`.`EMPLOYEES` (`ID`)
+    REFERENCES `smoff`.`EMPLOYEES` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_GUEST_BOOK_REF_GENERAL1`
     FOREIGN KEY (`REF_GENERAL_ID`)
-    REFERENCES `bukn1459_guestbook`.`REF_GENERAL` (`ID`)
+    REFERENCES `smoff`.`REF_GENERAL` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_GUEST_BOOK_MEETING1`
     FOREIGN KEY (`MEETING_ID`)
-    REFERENCES `bukn1459_guestbook`.`MEETING` (`ID`)
+    REFERENCES `smoff`.`MEETING` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -419,11 +426,11 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `bukn1459_guestbook`.`INIT_DATA`
+-- Table `smoff`.`INIT_DATA`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `bukn1459_guestbook`.`INIT_DATA` ;
+DROP TABLE IF EXISTS `smoff`.`INIT_DATA` ;
 
-CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`INIT_DATA` (
+CREATE TABLE IF NOT EXISTS `smoff`.`INIT_DATA` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `APP_NAME` TEXT NOT NULL,
   `OFFICE_NAME` TEXT NOT NULL,
@@ -440,23 +447,23 @@ CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`INIT_DATA` (
   INDEX `fk_INIT_DATA_FILE1_idx` (`FILE_ID` ASC),
   CONSTRAINT `fk_INIT_DATA_USER1`
     FOREIGN KEY (`USER_ID`)
-    REFERENCES `bukn1459_guestbook`.`USER` (`ID`)
+    REFERENCES `smoff`.`USER` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_INIT_DATA_FILE1`
     FOREIGN KEY (`FILE_ID`)
-    REFERENCES `bukn1459_guestbook`.`FILE` (`ID`)
+    REFERENCES `smoff`.`FILE` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `bukn1459_guestbook`.`MENU`
+-- Table `smoff`.`MENU`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `bukn1459_guestbook`.`MENU` ;
+DROP TABLE IF EXISTS `smoff`.`MENU` ;
 
-CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`MENU` (
+CREATE TABLE IF NOT EXISTS `smoff`.`MENU` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `MENU_NAME` VARCHAR(255) NOT NULL,
   `PERMALINK` TEXT NOT NULL,
@@ -471,18 +478,18 @@ CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`MENU` (
   INDEX `fk_MENU_MENU1_idx` (`MENU_ID` ASC),
   CONSTRAINT `fk_MENU_MENU1`
     FOREIGN KEY (`MENU_ID`)
-    REFERENCES `bukn1459_guestbook`.`MENU` (`ID`)
+    REFERENCES `smoff`.`MENU` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `bukn1459_guestbook`.`MEETING_PARTICIPANTS`
+-- Table `smoff`.`MEETING_PARTICIPANTS`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `bukn1459_guestbook`.`MEETING_PARTICIPANTS` ;
+DROP TABLE IF EXISTS `smoff`.`MEETING_PARTICIPANTS` ;
 
-CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`MEETING_PARTICIPANTS` (
+CREATE TABLE IF NOT EXISTS `smoff`.`MEETING_PARTICIPANTS` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `CREATE_DATE` DATETIME NOT NULL DEFAULT NOW(),
   `UPDATE_DATE` DATETIME NOT NULL DEFAULT NOW() ON UPDATE NOW(),
@@ -498,22 +505,22 @@ CREATE TABLE IF NOT EXISTS `bukn1459_guestbook`.`MEETING_PARTICIPANTS` (
   INDEX `fk_MEETING_PARTICIPANTS_USER1_idx` (`USER_ID` ASC),
   CONSTRAINT `fk_MEETNG_PARTICIPANTS_MEETING1`
     FOREIGN KEY (`MEETING_ID`)
-    REFERENCES `bukn1459_guestbook`.`MEETING` (`ID`)
+    REFERENCES `smoff`.`MEETING` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_MEETNG_PARTICIPANTS_GUEST1`
     FOREIGN KEY (`GUEST_ID`)
-    REFERENCES `bukn1459_guestbook`.`GUEST` (`ID`)
+    REFERENCES `smoff`.`GUEST` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_MEETNG_PARTICIPANTS_EMPLOYEES1`
     FOREIGN KEY (`EMPLOYEES_ID`)
-    REFERENCES `bukn1459_guestbook`.`EMPLOYEES` (`ID`)
+    REFERENCES `smoff`.`EMPLOYEES` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_MEETING_PARTICIPANTS_USER1`
     FOREIGN KEY (`USER_ID`)
-    REFERENCES `bukn1459_guestbook`.`USER` (`ID`)
+    REFERENCES `smoff`.`USER` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -524,159 +531,159 @@ SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 -- -----------------------------------------------------
--- Data for table `bukn1459_guestbook`.`ROLE`
+-- Data for table `smoff`.`ROLE`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `bukn1459_guestbook`;
-INSERT INTO `bukn1459_guestbook`.`ROLE` (`ID`, `ROLE_NAME`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Administrator', DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`ROLE` (`ID`, `ROLE_NAME`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Supervisor', DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`ROLE` (`ID`, `ROLE_NAME`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Operator', DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`ROLE` (`ID`, `ROLE_NAME`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Register', DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`ROLE` (`ID`, `ROLE_NAME`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Guest', DEFAULT, DEFAULT);
+USE `smoff`;
+INSERT INTO `smoff`.`ROLE` (`ID`, `ROLE_NAME`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Administrator', DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`ROLE` (`ID`, `ROLE_NAME`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Supervisor', DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`ROLE` (`ID`, `ROLE_NAME`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Operator', DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`ROLE` (`ID`, `ROLE_NAME`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Register', DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`ROLE` (`ID`, `ROLE_NAME`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Guest', DEFAULT, DEFAULT);
 
 COMMIT;
 
 
 -- -----------------------------------------------------
--- Data for table `bukn1459_guestbook`.`USER`
+-- Data for table `smoff`.`USER`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `bukn1459_guestbook`;
-INSERT INTO `bukn1459_guestbook`.`USER` (`ID`, `USERNAME`, `PASSWORD`, `USER_ALIAS`, `USER_STATUS`, `ROLE_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'admin', 'd666f520ed8353a63e25bef0918277ba', 'Administrator', '1', 1, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`USER` (`ID`, `USERNAME`, `PASSWORD`, `USER_ALIAS`, `USER_STATUS`, `ROLE_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'super', 'e19d5cd5af0378da05f63f891c7467af', 'Supervisor1', '0', 2, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`USER` (`ID`, `USERNAME`, `PASSWORD`, `USER_ALIAS`, `USER_STATUS`, `ROLE_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'oper', 'e19d5cd5af0378da05f63f891c7467af', 'Operator1', '0', 3, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`USER` (`ID`, `USERNAME`, `PASSWORD`, `USER_ALIAS`, `USER_STATUS`, `ROLE_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'demo1@gmail.com', 'e19d5cd5af0378da05f63f891c7467af', 'Register1', '1', 4, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`USER` (`ID`, `USERNAME`, `PASSWORD`, `USER_ALIAS`, `USER_STATUS`, `ROLE_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'demo2@gmail.com', 'e19d5cd5af0378da05f63f891c7467af', 'Register2', '1', 4, DEFAULT, DEFAULT);
+USE `smoff`;
+INSERT INTO `smoff`.`USER` (`ID`, `USERNAME`, `PASSWORD`, `USER_ALIAS`, `USER_STATUS`, `ROLE_ID`, `CREATE_DATE`, `UPDATE_DATE`, `FILE_ID`) VALUES (DEFAULT, 'admin', 'd666f520ed8353a63e25bef0918277ba', 'Administrator', '1', 1, DEFAULT, DEFAULT, NULL);
+INSERT INTO `smoff`.`USER` (`ID`, `USERNAME`, `PASSWORD`, `USER_ALIAS`, `USER_STATUS`, `ROLE_ID`, `CREATE_DATE`, `UPDATE_DATE`, `FILE_ID`) VALUES (DEFAULT, 'super', 'e19d5cd5af0378da05f63f891c7467af', 'Supervisor1', '0', 2, DEFAULT, DEFAULT, NULL);
+INSERT INTO `smoff`.`USER` (`ID`, `USERNAME`, `PASSWORD`, `USER_ALIAS`, `USER_STATUS`, `ROLE_ID`, `CREATE_DATE`, `UPDATE_DATE`, `FILE_ID`) VALUES (DEFAULT, 'oper', 'e19d5cd5af0378da05f63f891c7467af', 'Operator1', '0', 3, DEFAULT, DEFAULT, NULL);
+INSERT INTO `smoff`.`USER` (`ID`, `USERNAME`, `PASSWORD`, `USER_ALIAS`, `USER_STATUS`, `ROLE_ID`, `CREATE_DATE`, `UPDATE_DATE`, `FILE_ID`) VALUES (DEFAULT, 'demo1@gmail.com', 'e19d5cd5af0378da05f63f891c7467af', 'Register1', '1', 4, DEFAULT, DEFAULT, NULL);
+INSERT INTO `smoff`.`USER` (`ID`, `USERNAME`, `PASSWORD`, `USER_ALIAS`, `USER_STATUS`, `ROLE_ID`, `CREATE_DATE`, `UPDATE_DATE`, `FILE_ID`) VALUES (DEFAULT, 'demo2@gmail.com', 'e19d5cd5af0378da05f63f891c7467af', 'Register2', '1', 4, DEFAULT, DEFAULT, NULL);
 
 COMMIT;
 
 
 -- -----------------------------------------------------
--- Data for table `bukn1459_guestbook`.`REF_TYPE`
+-- Data for table `smoff`.`REF_TYPE`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `bukn1459_guestbook`;
-INSERT INTO `bukn1459_guestbook`.`REF_TYPE` (`ID`, `REF_TYPE_NAME`, `REF_TYPE_STATUS`, `CREATE_DATE`, `UPDATE_DATA`) VALUES (DEFAULT, 'COMPANY_TYPE', '1', DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`REF_TYPE` (`ID`, `REF_TYPE_NAME`, `REF_TYPE_STATUS`, `CREATE_DATE`, `UPDATE_DATA`) VALUES (DEFAULT, 'NEEDS_TYPE', '1', DEFAULT, DEFAULT);
+USE `smoff`;
+INSERT INTO `smoff`.`REF_TYPE` (`ID`, `REF_TYPE_NAME`, `REF_TYPE_STATUS`, `CREATE_DATE`, `UPDATE_DATA`) VALUES (DEFAULT, 'COMPANY_TYPE', '1', DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`REF_TYPE` (`ID`, `REF_TYPE_NAME`, `REF_TYPE_STATUS`, `CREATE_DATE`, `UPDATE_DATA`) VALUES (DEFAULT, 'NEEDS_TYPE', '1', DEFAULT, DEFAULT);
 
 COMMIT;
 
 
 -- -----------------------------------------------------
--- Data for table `bukn1459_guestbook`.`REF_GENERAL`
+-- Data for table `smoff`.`REF_GENERAL`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `bukn1459_guestbook`;
-INSERT INTO `bukn1459_guestbook`.`REF_GENERAL` (`ID`, `REF_NAME`, `REF_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `REF_TYPE_ID`) VALUES (DEFAULT, 'Expedition', '1', DEFAULT, DEFAULT, 1);
-INSERT INTO `bukn1459_guestbook`.`REF_GENERAL` (`ID`, `REF_NAME`, `REF_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `REF_TYPE_ID`) VALUES (DEFAULT, 'Non Expedition', '1', DEFAULT, DEFAULT, 1);
-INSERT INTO `bukn1459_guestbook`.`REF_GENERAL` (`ID`, `REF_NAME`, `REF_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `REF_TYPE_ID`) VALUES (DEFAULT, 'Meeting', '1', DEFAULT, DEFAULT, 2);
-INSERT INTO `bukn1459_guestbook`.`REF_GENERAL` (`ID`, `REF_NAME`, `REF_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `REF_TYPE_ID`) VALUES (DEFAULT, 'Meet Someone', '1', DEFAULT, DEFAULT, 2);
-INSERT INTO `bukn1459_guestbook`.`REF_GENERAL` (`ID`, `REF_NAME`, `REF_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `REF_TYPE_ID`) VALUES (DEFAULT, 'Other needs', '1', DEFAULT, DEFAULT, 2);
+USE `smoff`;
+INSERT INTO `smoff`.`REF_GENERAL` (`ID`, `REF_NAME`, `REF_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `REF_TYPE_ID`) VALUES (DEFAULT, 'Expedition', '1', DEFAULT, DEFAULT, 1);
+INSERT INTO `smoff`.`REF_GENERAL` (`ID`, `REF_NAME`, `REF_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `REF_TYPE_ID`) VALUES (DEFAULT, 'Non Expedition', '1', DEFAULT, DEFAULT, 1);
+INSERT INTO `smoff`.`REF_GENERAL` (`ID`, `REF_NAME`, `REF_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `REF_TYPE_ID`) VALUES (DEFAULT, 'Meeting', '1', DEFAULT, DEFAULT, 2);
+INSERT INTO `smoff`.`REF_GENERAL` (`ID`, `REF_NAME`, `REF_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `REF_TYPE_ID`) VALUES (DEFAULT, 'Meet Someone', '1', DEFAULT, DEFAULT, 2);
+INSERT INTO `smoff`.`REF_GENERAL` (`ID`, `REF_NAME`, `REF_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `REF_TYPE_ID`) VALUES (DEFAULT, 'Other needs', '1', DEFAULT, DEFAULT, 2);
 
 COMMIT;
 
 
 -- -----------------------------------------------------
--- Data for table `bukn1459_guestbook`.`COMPANY`
+-- Data for table `smoff`.`COMPANY`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `bukn1459_guestbook`;
-INSERT INTO `bukn1459_guestbook`.`COMPANY` (`ID`, `COMPANY_NAME`, `COMPANY_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `REF_GENERAL_ID`) VALUES (DEFAULT, 'Gojek', '1', DEFAULT, DEFAULT, 1, 1);
-INSERT INTO `bukn1459_guestbook`.`COMPANY` (`ID`, `COMPANY_NAME`, `COMPANY_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `REF_GENERAL_ID`) VALUES (DEFAULT, 'JNE', '1', DEFAULT, DEFAULT, 1, 1);
-INSERT INTO `bukn1459_guestbook`.`COMPANY` (`ID`, `COMPANY_NAME`, `COMPANY_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `REF_GENERAL_ID`) VALUES (DEFAULT, 'PT. Pos Indonesia', '1', DEFAULT, DEFAULT, 1, 1);
-INSERT INTO `bukn1459_guestbook`.`COMPANY` (`ID`, `COMPANY_NAME`, `COMPANY_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `REF_GENERAL_ID`) VALUES (DEFAULT, 'Direktorat Sistem Perbendaharaan', '1', DEFAULT, DEFAULT, 1, 2);
-INSERT INTO `bukn1459_guestbook`.`COMPANY` (`ID`, `COMPANY_NAME`, `COMPANY_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `REF_GENERAL_ID`) VALUES (DEFAULT, 'Bank Mandiri', '1', DEFAULT, DEFAULT, 1, 2);
+USE `smoff`;
+INSERT INTO `smoff`.`COMPANY` (`ID`, `COMPANY_NAME`, `COMPANY_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `REF_GENERAL_ID`) VALUES (DEFAULT, 'Gojek', '1', DEFAULT, DEFAULT, 1, 1);
+INSERT INTO `smoff`.`COMPANY` (`ID`, `COMPANY_NAME`, `COMPANY_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `REF_GENERAL_ID`) VALUES (DEFAULT, 'JNE', '1', DEFAULT, DEFAULT, 1, 1);
+INSERT INTO `smoff`.`COMPANY` (`ID`, `COMPANY_NAME`, `COMPANY_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `REF_GENERAL_ID`) VALUES (DEFAULT, 'PT. Pos Indonesia', '1', DEFAULT, DEFAULT, 1, 1);
+INSERT INTO `smoff`.`COMPANY` (`ID`, `COMPANY_NAME`, `COMPANY_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `REF_GENERAL_ID`) VALUES (DEFAULT, 'Direktorat Sistem Perbendaharaan', '1', DEFAULT, DEFAULT, 1, 2);
+INSERT INTO `smoff`.`COMPANY` (`ID`, `COMPANY_NAME`, `COMPANY_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `REF_GENERAL_ID`) VALUES (DEFAULT, 'Bank Mandiri', '1', DEFAULT, DEFAULT, 1, 2);
 
 COMMIT;
 
 
 -- -----------------------------------------------------
--- Data for table `bukn1459_guestbook`.`DIVISION`
+-- Data for table `smoff`.`DIVISION`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `bukn1459_guestbook`;
-INSERT INTO `bukn1459_guestbook`.`DIVISION` (`ID`, `DIVISION_NAME`, `DIVISION_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `DIVISION_TOP_ID`, `USER_ID`) VALUES (DEFAULT, 'Head Division', DEFAULT, DEFAULT, DEFAULT, NULL, 4);
-INSERT INTO `bukn1459_guestbook`.`DIVISION` (`ID`, `DIVISION_NAME`, `DIVISION_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `DIVISION_TOP_ID`, `USER_ID`) VALUES (DEFAULT, 'Second Division', DEFAULT, DEFAULT, DEFAULT, NULL, 4);
+USE `smoff`;
+INSERT INTO `smoff`.`DIVISION` (`ID`, `DIVISION_NAME`, `DIVISION_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `DIVISION_TOP_ID`, `USER_ID`) VALUES (DEFAULT, 'Head Division', DEFAULT, DEFAULT, DEFAULT, NULL, 4);
+INSERT INTO `smoff`.`DIVISION` (`ID`, `DIVISION_NAME`, `DIVISION_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `DIVISION_TOP_ID`, `USER_ID`) VALUES (DEFAULT, 'Second Division', DEFAULT, DEFAULT, DEFAULT, NULL, 4);
 
 COMMIT;
 
 
 -- -----------------------------------------------------
--- Data for table `bukn1459_guestbook`.`EMPLOYEES`
+-- Data for table `smoff`.`EMPLOYEES`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `bukn1459_guestbook`;
-INSERT INTO `bukn1459_guestbook`.`EMPLOYEES` (`ID`, `EMPLOYEE_NAME`, `EMPLOYEE_EMAIL`, `EMPLOYEE_PHONE`, `EMPLOYEE_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `EMPLOYEES_TOP_ID`, `DIVISION_ID`, `FILE_ID`) VALUES (DEFAULT, 'Yudi Prasetyo', 'prasetyaningyudi@gmail.com', '081329680342', '1', DEFAULT, DEFAULT, 4, NULL, NULL, NULL);
-INSERT INTO `bukn1459_guestbook`.`EMPLOYEES` (`ID`, `EMPLOYEE_NAME`, `EMPLOYEE_EMAIL`, `EMPLOYEE_PHONE`, `EMPLOYEE_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `EMPLOYEES_TOP_ID`, `DIVISION_ID`, `FILE_ID`) VALUES (DEFAULT, 'Miftah Wazni', 'miftahwazni@gmail.com', '08888888888', '1', DEFAULT, DEFAULT, 4, NULL, NULL, NULL);
+USE `smoff`;
+INSERT INTO `smoff`.`EMPLOYEES` (`ID`, `EMPLOYEE_NAME`, `EMPLOYEE_EMAIL`, `EMPLOYEE_PHONE`, `EMPLOYEE_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `EMPLOYEES_TOP_ID`, `DIVISION_ID`, `FILE_ID`) VALUES (DEFAULT, 'Yudi Prasetyo', 'prasetyaningyudi@gmail.com', '081329680342', '1', DEFAULT, DEFAULT, 4, NULL, NULL, NULL);
+INSERT INTO `smoff`.`EMPLOYEES` (`ID`, `EMPLOYEE_NAME`, `EMPLOYEE_EMAIL`, `EMPLOYEE_PHONE`, `EMPLOYEE_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `EMPLOYEES_TOP_ID`, `DIVISION_ID`, `FILE_ID`) VALUES (DEFAULT, 'Miftah Wazni', 'miftahwazni@gmail.com', '08888888888', '1', DEFAULT, DEFAULT, 4, NULL, NULL, NULL);
 
 COMMIT;
 
 
 -- -----------------------------------------------------
--- Data for table `bukn1459_guestbook`.`GUEST`
+-- Data for table `smoff`.`GUEST`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `bukn1459_guestbook`;
-INSERT INTO `bukn1459_guestbook`.`GUEST` (`ID`, `GUEST_NAME`, `GUEST_EMAIL`, `GUEST_PHONE`, `GUEST_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `COMPANY_ID`, `FILE_ID`) VALUES (DEFAULT, 'John Doe', 'johndoe@gmail.com', NULL, '1', DEFAULT, DEFAULT, 1, 3, NULL);
-INSERT INTO `bukn1459_guestbook`.`GUEST` (`ID`, `GUEST_NAME`, `GUEST_EMAIL`, `GUEST_PHONE`, `GUEST_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `COMPANY_ID`, `FILE_ID`) VALUES (DEFAULT, 'Guest Inaktif', 'inactive@gmail.com', NULL, '0', DEFAULT, DEFAULT, 1, 2, NULL);
-INSERT INTO `bukn1459_guestbook`.`GUEST` (`ID`, `GUEST_NAME`, `GUEST_EMAIL`, `GUEST_PHONE`, `GUEST_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `COMPANY_ID`, `FILE_ID`) VALUES (DEFAULT, 'Jane Doe', 'janedoe@gmail.com', NULL, '1', DEFAULT, DEFAULT, 1, 5, NULL);
-INSERT INTO `bukn1459_guestbook`.`GUEST` (`ID`, `GUEST_NAME`, `GUEST_EMAIL`, `GUEST_PHONE`, `GUEST_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `COMPANY_ID`, `FILE_ID`) VALUES (DEFAULT, 'Marry Jane', 'mj@gmail.com', NULL, '1', DEFAULT, DEFAULT, 1, 1, NULL);
+USE `smoff`;
+INSERT INTO `smoff`.`GUEST` (`ID`, `GUEST_NAME`, `GUEST_EMAIL`, `GUEST_PHONE`, `GUEST_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `COMPANY_ID`, `FILE_ID`) VALUES (DEFAULT, 'John Doe', 'johndoe@gmail.com', NULL, '1', DEFAULT, DEFAULT, 1, 3, NULL);
+INSERT INTO `smoff`.`GUEST` (`ID`, `GUEST_NAME`, `GUEST_EMAIL`, `GUEST_PHONE`, `GUEST_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `COMPANY_ID`, `FILE_ID`) VALUES (DEFAULT, 'Guest Inaktif', 'inactive@gmail.com', NULL, '0', DEFAULT, DEFAULT, 1, 2, NULL);
+INSERT INTO `smoff`.`GUEST` (`ID`, `GUEST_NAME`, `GUEST_EMAIL`, `GUEST_PHONE`, `GUEST_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `COMPANY_ID`, `FILE_ID`) VALUES (DEFAULT, 'Jane Doe', 'janedoe@gmail.com', NULL, '1', DEFAULT, DEFAULT, 1, 5, NULL);
+INSERT INTO `smoff`.`GUEST` (`ID`, `GUEST_NAME`, `GUEST_EMAIL`, `GUEST_PHONE`, `GUEST_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `COMPANY_ID`, `FILE_ID`) VALUES (DEFAULT, 'Marry Jane', 'mj@gmail.com', NULL, '1', DEFAULT, DEFAULT, 1, 1, NULL);
 
 COMMIT;
 
 
 -- -----------------------------------------------------
--- Data for table `bukn1459_guestbook`.`MEETING_ROOM`
+-- Data for table `smoff`.`MEETING_ROOM`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `bukn1459_guestbook`;
-INSERT INTO `bukn1459_guestbook`.`MEETING_ROOM` (`ID`, `ROOM_NAME`, `ROOM_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`) VALUES (DEFAULT, 'Room 1', DEFAULT, DEFAULT, DEFAULT, 4);
-INSERT INTO `bukn1459_guestbook`.`MEETING_ROOM` (`ID`, `ROOM_NAME`, `ROOM_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`) VALUES (DEFAULT, 'Room 2', DEFAULT, DEFAULT, DEFAULT, 4);
+USE `smoff`;
+INSERT INTO `smoff`.`MEETING_ROOM` (`ID`, `ROOM_NAME`, `ROOM_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`) VALUES (DEFAULT, 'Room 1', DEFAULT, DEFAULT, DEFAULT, 4);
+INSERT INTO `smoff`.`MEETING_ROOM` (`ID`, `ROOM_NAME`, `ROOM_STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`) VALUES (DEFAULT, 'Room 2', DEFAULT, DEFAULT, DEFAULT, 4);
 
 COMMIT;
 
 
 -- -----------------------------------------------------
--- Data for table `bukn1459_guestbook`.`INIT_DATA`
+-- Data for table `smoff`.`INIT_DATA`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `bukn1459_guestbook`;
-INSERT INTO `bukn1459_guestbook`.`INIT_DATA` (`ID`, `APP_NAME`, `OFFICE_NAME`, `ICON`, `THEME`, `FRONT_ICON`, `FRONT_PAGE`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `FILE_ID`) VALUES (DEFAULT, 'Buku Tamu', 'PT Angin Ribut', 'envelope', 'dark', 'quora', 'demo', DEFAULT, DEFAULT, 4, NULL);
+USE `smoff`;
+INSERT INTO `smoff`.`INIT_DATA` (`ID`, `APP_NAME`, `OFFICE_NAME`, `ICON`, `THEME`, `FRONT_ICON`, `FRONT_PAGE`, `CREATE_DATE`, `UPDATE_DATE`, `USER_ID`, `FILE_ID`) VALUES (DEFAULT, 'Buku Tamu', 'PT Angin Ribut', 'envelope', 'dark', 'quora', 'demo', DEFAULT, DEFAULT, 4, NULL);
 
 COMMIT;
 
 
 -- -----------------------------------------------------
--- Data for table `bukn1459_guestbook`.`MENU`
+-- Data for table `smoff`.`MENU`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `bukn1459_guestbook`;
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (1, 'Front Page', '#', 'play', '10', '1', '4', NULL, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (2, 'Guest Book', '#', 'book', '20', '1', '1,4', NULL, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (3, 'Delivery', '#', 'gift', '30', '1', '1,4', NULL, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (4, 'Company', '#', 'copyright-mark', '40', '1', '1,4', NULL, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (5, 'Employee', '#', 'list-alt', '50', '1', '1,4', NULL, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (6, 'Division', '#', 'object-align-horizontal', '60', '1', '1,4', NULL, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (7, 'Meeting', '#', 'blackboard', '70', '1', '1,4', NULL, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (8, 'Meeting Room', '#', 'object-align-top', '80', '1', '1,4', NULL, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (9, 'Init Data', '#', 'wrench', '90', '1', '4', NULL, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (10, 'User', '#', 'user', '100', '1', '1', NULL, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'View', '#', 'eye-open', '10', '1', '4', 1, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'View', 'guest_book', 'eye-open', '10', '1', '1,4', 2, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'View', 'packages', 'eye-open', '10', '1', '1,4', 3, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'View', 'company', 'eye-open', '10', '1', '1,4', 4, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Create', 'company/create', 'plus', '20', '1', '1,4', 4, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'View', 'employee', 'eye-open', '10', '1', '1,4', 5, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Create', 'employee/create', 'plus', '20', '1', '1,4', 5, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'View', 'division', 'eye-open', '10', '1', '1,4', 6, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Create', 'division/create', 'plus', '20', '1', '1,4', 6, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'View', 'meeting', 'eye-open', '10', '1', '1,4', 7, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Create', 'meeting/create', 'plus', '20', '1', '1,4', 7, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'View', 'meeting_room', 'eye-open', '10', '1', '1,4', 8, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Create', 'meeting_room/create', 'plus', '20', '1', '1,4', 8, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Manage', 'home/init_data', 'cog', '10', '1', '1,4', 9, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'View', 'user', 'eye-open', '10', '1', '1', 10, DEFAULT, DEFAULT);
-INSERT INTO `bukn1459_guestbook`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Create', 'user/create', 'plus', '20', '1', '1', 10, DEFAULT, DEFAULT);
+USE `smoff`;
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (1, 'Front Page', '#', 'play', '10', '1', '4', NULL, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (2, 'Guest Book', '#', 'book', '20', '1', '1,4', NULL, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (3, 'Delivery', '#', 'gift', '30', '1', '1,4', NULL, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (4, 'Company', '#', 'copyright-mark', '40', '1', '1,4', NULL, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (5, 'Employee', '#', 'list-alt', '50', '1', '1,4', NULL, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (6, 'Division', '#', 'object-align-horizontal', '60', '1', '1,4', NULL, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (7, 'Meeting', '#', 'blackboard', '70', '1', '1,4', NULL, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (8, 'Meeting Room', '#', 'object-align-top', '80', '1', '1,4', NULL, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (9, 'Init Data', '#', 'wrench', '90', '1', '4', NULL, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (10, 'User', '#', 'user', '100', '1', '1', NULL, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'View', '#', 'eye-open', '10', '1', '4', 1, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'View', 'guest_book', 'eye-open', '10', '1', '1,4', 2, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'View', 'packages', 'eye-open', '10', '1', '1,4', 3, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'View', 'company', 'eye-open', '10', '1', '1,4', 4, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Create', 'company/create', 'plus', '20', '1', '1,4', 4, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'View', 'employee', 'eye-open', '10', '1', '1,4', 5, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Create', 'employee/create', 'plus', '20', '1', '1,4', 5, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'View', 'division', 'eye-open', '10', '1', '1,4', 6, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Create', 'division/create', 'plus', '20', '1', '1,4', 6, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'View', 'meeting', 'eye-open', '10', '1', '1,4', 7, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Create', 'meeting/create', 'plus', '20', '1', '1,4', 7, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'View', 'meeting_room', 'eye-open', '10', '1', '1,4', 8, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Create', 'meeting_room/create', 'plus', '20', '1', '1,4', 8, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Manage', 'home/init_data', 'cog', '10', '1', '1,4', 9, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'View', 'user', 'eye-open', '10', '1', '1', 10, DEFAULT, DEFAULT);
+INSERT INTO `smoff`.`MENU` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `MENU_STATUS`, `ROLE_ACCESS`, `MENU_ID`, `CREATE_DATE`, `UPDATE_DATE`) VALUES (DEFAULT, 'Create', 'user/create', 'plus', '20', '1', '1', 10, DEFAULT, DEFAULT);
 
 COMMIT;
 
