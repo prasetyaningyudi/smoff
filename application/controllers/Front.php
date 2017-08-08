@@ -254,10 +254,25 @@ class Front extends CI_Controller {
 										'USER_ID' => $_POST['id'],
 									);								
 								$this->db->insert('GUEST_BOOK', $this->data['saveddata']);
+								
+/* 								$last_id = $this->db->insert_id();
+								$this->db->select('ID');
+								$this->db->select('CREATE_DATE');
+								$this->db->from('GUEST_BOOK');		
+								$this->db->where('ID', $last_id);									
+								$query = $this->db->get(); 
+								$this->data['record31'] = $query->result();								
+								if($query->num_rows()==1){
+									foreach($this->data['record11'] as $item){
+										$create_date = $item->CREATE_DATE;
+									}
+								}else{
+									$create_date = '';
+								} */
 								//redirect(base_url().'front/welcome/'.$this->data['front_page']);
 								//send email
-								$message = 'NOTIFICATION<br><br>You have a guest from<br>Name : '.$_POST['name'].'<br>Email : '.$_POST['email'].'<br>Company : '.$_POST['company'];
-							$this->mail_model->sent_from_gmail($employee_email, 'Guest : '.$_POST['name'], $message, $message);								
+								$message = 'NOTIFICATION<br><br>You have a guest from<br>Name : '.$_POST['name'].'<br>Email : '.$_POST['email'].'<br>Company : '.$_POST['company'].'<br>Date : '.date('F d, Y').'<br>Time : '.date('H:i:s');
+								$this->mail_model->sent_from_gmail($employee_email, 'Guest : '.$_POST['name'], $message, $message);								
 								redirect('front/thanks/2/'.$this->data['front_page']);
 							}else{
 								$this->data['name'] = $_POST['name'];		
